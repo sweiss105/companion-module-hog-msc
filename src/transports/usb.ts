@@ -1,8 +1,26 @@
-import { Output } from '@julusian/midi'
+import { createRequire } from 'node:module'
 import type { MidiTransport, TransportEvents } from './types.js'
 
+type MidiOutput = {
+	getPortCount(): number
+	getPortName(index: number): string
+	openPort(index: number): void
+	closePort(): void
+	sendMessage(message: number[]): void
+}
+
+type MidiModule = { Output: new () => MidiOutput }
+
+function createOutput(): MidiOutput {
+	// Load the native binding only when USB MIDI is enumerated or selected. This keeps
+	// the module loadable on hosts used solely for TCP/RTP-MIDI and in package checks.
+	const require = createRequire(import.meta.url)
+	const midi = require('@julusian/midi') as MidiModule
+	return new midi.Output()
+}
+
 export function listMidiOutputs(): string[] {
-	const output = new Output()
+	const output = createOutput()
 	try {
 		return Array.from({ length: output.getPortCount() }, (_, index) => output.getPortName(index))
 	} finally {
@@ -11,7 +29,7 @@ export function listMidiOutputs(): string[] {
 }
 
 export class UsbMidiTransport implements MidiTransport {
-	private output?: Output
+	private output?: MidiOutput
 	private retry?: NodeJS.Timeout
 	private stopped = false
 
@@ -28,7 +46,7 @@ export class UsbMidiTransport implements MidiTransport {
 	private open(): void {
 		if (this.stopped || this.output) return
 		try {
-			const output = new Output()
+			const output = createOutput()
 			const index = Array.from({ length: output.getPortCount() }, (_, i) => i).find(
 				(i) => output.getPortName(i) === this.deviceName,
 			)
