@@ -18,12 +18,35 @@ Operating rules:
 
 - Goal: unofficial Bitfocus Companion module, display name `ETC Hog 5 MIDI Show Control`, official support target Hog OS 5 only.
 - Authoritative project root: `/Users/steve.weiss/Documents/ChatGPT/Hog 5 MSC Companion Module`.
+- Public repository: `https://github.com/sweiss105/companion-module-hog-msc`, branch `main`.
 - Version: `0.1.0` development scaffold; first eventual GitHub release is intended to be a pre-release.
 - Known-good boundary: TypeScript compiles; lint and 5 offline unit tests pass; a Companion `.tgz` package builds.
 - Not qualified: no live Companion load, USB MIDI hardware, AppleMIDI peer, raw TCP peer, or Hog OS 5 console test has been performed.
 - Immediate next step: load the package in a current Companion developer environment and complete a non-show Hog OS 5 Event Monitor acceptance cycle, starting with USB MIDI.
 
 ## Work history
+
+### [2026-09-08 18:53 CDT] Published the initial public GitHub repository
+
+Actor: user and agent
+
+Context and request:
+- The user authorized creation of a public GitHub repository under the already authenticated `sweiss105` account, including committing and pushing the current scaffold.
+
+Completed:
+- Reinitialized the local repository before publication so the GitHub history contains only this project and does not inherit the Bitfocus template's commit history.
+- Created public repository `sweiss105/companion-module-hog-msc` with description `Unofficial Bitfocus Companion module for ETC Hog 5 MIDI Show Control`.
+- Added HTTPS remote `origin`, pushed branch `main`, and configured the local branch to track `origin/main`.
+- Created root commit `41aa29f60c31d34abbe0eeb56b0b6957e9b38c09` (`feat: initial Hog 5 MSC Companion module`).
+
+Validation:
+- `corepack yarn check`: passed immediately before the root commit (lint, TypeScript build, 5 offline tests).
+- `git diff --cached --check`: passed before the root commit.
+- GitHub repository creation and initial `main` push completed successfully.
+
+Remaining / next step:
+- Commit and push this publication record, then verify remote `main` and GitHub Actions status.
+- Live Companion loading and physical Hog OS 5 transport qualification remain pending.
 
 ### [2026-09-08 18:49 CDT] Expanded the durable record of all prior project work
 
