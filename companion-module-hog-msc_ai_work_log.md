@@ -22,11 +22,40 @@ Operating rules:
 - Authoritative project root: `/Users/steve.weiss/Documents/ChatGPT/Hog 5 MSC Companion Module`.
 - Public repository: `https://github.com/sweiss105/companion-module-hog-msc`, branch `main`.
 - Version: `0.1.0` development scaffold; first eventual GitHub release is intended to be a pre-release.
-- Known-good boundary: TypeScript compiles; lint and 5 offline unit tests pass; a Companion `.tgz` package builds.
+- Known-good boundary: local lint, TypeScript build, 5 offline tests, package generation/import, GitHub CI, and Bitfocus Companion Module Checks pass at commit `7b0f0e94e2a8c49faa404d7d5eaac0e4507cecaa`.
 - Not qualified: no live Companion load, USB MIDI hardware, AppleMIDI peer, raw TCP peer, or Hog OS 5 console test has been performed.
 - Immediate next step: load the package in a current Companion developer environment and complete a non-show Hog OS 5 Event Monitor acceptance cycle, starting with USB MIDI.
 
 ## Work history
+
+### [2026-09-08 18:57 CDT] Repaired and verified GitHub CI and packaged-module loading
+
+Actor: agent
+
+Context and request:
+
+- Complete the authorized GitHub setup with a healthy initial `main` branch rather than leaving the repository's first automated checks failing.
+
+Completed:
+
+- Diagnosed the first CI failure: `actions/setup-node` attempted Yarn caching before Corepack enabled the repository's required Yarn 4 version.
+- Removed the premature Yarn cache option and explicitly preapproved the scoped native dependency `@julusian/midi` in `.yarnrc.yml`.
+- Diagnosed the Bitfocus module-check failure: the packaged module imported the native MIDI binding at module-load time, so package validation failed on a host without the matching native binding.
+- Changed `src/transports/usb.ts` to load `@julusian/midi` only when USB MIDI is enumerated or used. TCP/RTP-only hosts and package validation can now import the module without loading a USB native binding.
+- Corrected the Husky/lint-staged command to invoke Yarn 4 through Corepack.
+- Pushed CI repair commit `95c7bdd` and packaged-module loading repair commit `7b0f0e94e2a8c49faa404d7d5eaac0e4507cecaa`.
+
+Validation:
+
+- `corepack yarn check`: passed after the repair.
+- `corepack yarn package`: passed.
+- Direct import of `pkg/hog-msc/main.js` confirmed the packaged default export is a function without loading the USB native binding.
+- GitHub CI run `34292848953`: passed.
+- Bitfocus Companion Module Checks run `34292849369`: passed.
+
+Remaining / next step:
+
+- Commit and push this final work-log update; live Companion UI and physical Hog OS 5 transport qualification remain pending.
 
 ### [2026-09-08 18:53 CDT] Published the initial public GitHub repository
 
