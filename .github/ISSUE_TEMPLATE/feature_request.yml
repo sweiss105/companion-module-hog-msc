@@ -1,0 +1,14 @@
+name: Feature request
+description: Propose a focused Hog OS 5 MSC improvement
+body:
+  - type: textarea
+    id: need
+    attributes: { label: Operator need, description: Describe the workflow and why existing actions are insufficient. }
+    validations: { required: true }
+  - type: textarea
+    id: protocol
+    attributes: { label: Protocol evidence, description: Link authoritative ETC or MSC documentation if applicable. }
+  - type: textarea
+    id: safety
+    attributes: { label: Live-use and compatibility impact, description: Explain failure modes and a safe test plan. }
+    validations: { required: true }
