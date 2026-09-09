@@ -1,4 +1,4 @@
-import { createRequire } from 'node:module'
+import { Output } from '@julusian/midi/lazy'
 import type { MidiTransport, TransportEvents } from './types.js'
 
 type MidiOutput = {
@@ -9,14 +9,10 @@ type MidiOutput = {
 	sendMessage(message: number[]): void
 }
 
-type MidiModule = { Output: new () => MidiOutput }
-
 function createOutput(): MidiOutput {
-	// Load the native binding only when USB MIDI is enumerated or selected. This keeps
-	// the module loadable on hosts used solely for TCP/RTP-MIDI and in package checks.
-	const require = createRequire(import.meta.url)
-	const midi = require('@julusian/midi') as MidiModule
-	return new midi.Output()
+	// Use the package's lazy entry so its JavaScript native-loader is included in the
+	// Companion bundle, while native loading remains deferred until USB is inspected.
+	return new Output()
 }
 
 export function listMidiOutputs(): string[] {

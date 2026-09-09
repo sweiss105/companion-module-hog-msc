@@ -21,13 +21,42 @@ Operating rules:
 - Goal: unofficial Bitfocus Companion module, display name `ETC Hog 5 MIDI Show Control`, official support target Hog OS 5 only.
 - Authoritative project root: `/Users/steve.weiss/Documents/ChatGPT/Hog 5 MSC Companion Module`.
 - Public repository: `https://github.com/sweiss105/companion-module-hog-msc`, branch `main`.
-- Version: `0.1.1` development scaffold; first eventual GitHub release is intended to be a pre-release.
-- Known-good boundary: local lint, TypeScript build, 5 offline tests, native-prebuild package generation/content inspection, packaged-module import, GitHub CI, and Bitfocus Companion Module Checks pass for fix commit `258f407ceb01d956f614c368d8d6c6dd84a998dc`.
-- USB packaging defect: fixed locally by declaring the `native-addons` permission and packaging `@julusian/midi` prebuilds for supported macOS, Linux, and Windows architectures. Reinstallation and enumeration inside Companion remain pending.
+- Version: `0.1.2` development scaffold; first eventual GitHub release is intended to be a pre-release.
+- Known-good boundary: local lint, TypeScript build, 5 offline tests, package generation/content inspection, packaged-module import, and packaged-layout USB enumeration pass for `hog-msc-0.1.2.tgz`; GitHub checks and Companion installation remain pending.
+- USB packaging defect: version 0.1.1 installed its native binaries but omitted the bundled JavaScript loader because USB used an opaque runtime `createRequire()` call. Version 0.1.2 uses the package's statically bundled lazy entry and enumerates `C2MIDI Pro Port 1` from the packaged layout.
 - Not qualified: no MSC command has been transmitted to or observed by Hog OS 5; AppleMIDI and raw TCP also remain untested.
-- Immediate next step: install `hog-msc-0.1.1.tgz` in Companion and confirm that `C2MIDI Pro Port 1` appears in the USB output dropdown before sending any command.
+- Immediate next step: install `hog-msc-0.1.2.tgz` in Companion and confirm that `C2MIDI Pro Port 1` appears in the USB output dropdown before sending any command.
 
 ## Work history
+
+### [2026-09-09 09:01 CDT] Corrected the packaged MIDI loader and verified packaged USB enumeration
+
+Actor: user and agent
+
+Context and request:
+
+- After installing version 0.1.1, the user supplied a Companion 5.0.3 screenshot showing the module initialized at version 0.1.1 but the USB MIDI output dropdown still reported `No options found`.
+- Diagnosis and validation remained non-transmitting; no MIDI command was sent.
+
+Completed:
+
+- Read the current Companion log and confirmed the module process registered and initialized successfully, then remained in `Transport reconnecting`; this ruled out a module startup crash.
+- Confirmed the installed module contained the expected native `.node` prebuilds.
+- Compared the installed bundle with Companion's working `generic-midi` module and found that version 0.1.1's runtime `createRequire('@julusian/midi')` prevented the package's JavaScript native-loader from being bundled. The config code swallowed the resulting resolution error and returned an empty device list.
+- Replaced the opaque runtime require with the statically bundled `@julusian/midi/lazy` entry, retaining deferred native initialization for non-USB transports and package checks.
+- Bumped the development package and manifest to version `0.1.2` and built `hog-msc-0.1.2.tgz`.
+
+Validation:
+
+- `corepack yarn check`: passed (lint, TypeScript build, 5 offline tests).
+- `corepack yarn package`: passed and produced `hog-msc-0.1.2.tgz` with the JavaScript loader and native prebuilds.
+- Invoked `getConfigFields()` directly from `pkg/hog-msc/main.js` using Companion's bundled Node 22 runtime; packaged-layout enumeration returned all local outputs, including `C2MIDI Pro Port 1`.
+- No MIDI or Hog MSC command was sent. Installation into Companion and physical Hog OS 5 qualification remain pending.
+
+Remaining / next step:
+
+- Commit and push version 0.1.2, verify GitHub checks, install `hog-msc-0.1.2.tgz`, and confirm the dropdown in Companion.
+- Do not send an MSC command until a fresh safe-state checkpoint is established.
 
 ### [2026-09-09 08:55 CDT] Fixed USB MIDI native-addon packaging and built version 0.1.1
 

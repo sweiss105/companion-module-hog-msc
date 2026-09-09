@@ -5,7 +5,7 @@
 	"name": "ETC Hog 5 MIDI Show Control",
 	"shortname": "Hog 5 MSC",
 	"description": "Unofficial MIDI Show Control for ETC Hog 5",
-	"version": "0.1.1",
+	"version": "0.1.2",
 	"license": "MIT",
 	"repository": "git+https://github.com/sweiss105/companion-module-hog-msc.git",
 	"bugs": "https://github.com/sweiss105/companion-module-hog-msc/issues",

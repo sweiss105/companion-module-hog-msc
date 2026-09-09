@@ -4,6 +4,13 @@ All notable changes will be documented here. This project follows Semantic Versi
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-09-09
+
+### Fixed
+
+- Bundle the `@julusian/midi` JavaScript native-loader while deferring native initialization until USB MIDI is enumerated or used.
+- Restore USB output enumeration from an installed Companion package; version 0.1.1 included native binaries but omitted the loader that resolves them.
+
 ## [0.1.1] - 2026-09-09
 
 ### Fixed
