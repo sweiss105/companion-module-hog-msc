@@ -9,3 +9,6 @@ pkg/
 !.yarn/versions
 *.tgz
 .DS_Store
+
+# Locally supplied vendor reference, not redistributed.
+docs/Hog_v5.2.1_UserManual_revA.pdf

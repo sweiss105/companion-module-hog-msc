@@ -1,6 +1,6 @@
 {
 	"name": "companion-module-hog-msc",
-	"version": "0.1.4",
+	"version": "0.1.13",
 	"main": "dist/main.js",
 	"type": "module",
 	"scripts": {

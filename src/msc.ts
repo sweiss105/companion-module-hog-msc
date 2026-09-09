@@ -48,7 +48,9 @@ export function encodeOpenCuePath(device: DeviceAddress, page: string): Uint8Arr
 }
 
 export function encodeScene(device: DeviceAddress, scene: string, release = false): Uint8Array {
-	return envelope(device, release ? MscCommand.GoOff : MscCommand.Go, targetData(scene, '', '5'))
+	// Hog's captured native scene messages use an empty cue, scene in the list
+	// field, and binary path 0x05 (not the ASCII digit '5').
+	return envelope(device, release ? MscCommand.GoOff : MscCommand.Go, [0x00, ...ascii(scene), 0x00, 0x05])
 }
 
 export function parseRawSysex(input: string): Uint8Array {

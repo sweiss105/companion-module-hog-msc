@@ -1,15 +1,16 @@
 import type { SomeCompanionConfigField } from '@companion-module/base'
+import { listMidiInputs } from './transports/usb-input.js'
 import { listMidiOutputs } from './transports/usb.js'
 
 export type ModuleConfig = {
-	transport: 'usb' | 'rtp-midi' | 'tcp'
+	returnEnabled?: boolean
+	returnDevice?: string
+	returnDeviceId?: number
+	transport?: string // Retained to reject unsupported transport values in older configurations.
 	deviceMode: 'specific' | 'broadcast'
 	deviceId: number
 	interCommandDelay: number
 	usbDevice: string
-	host: string
-	port: number
-	rtpSessionName: string
 }
 
 export function GetConfigFields(): SomeCompanionConfigField[] {
@@ -19,18 +20,30 @@ export function GetConfigFields(): SomeCompanionConfigField[] {
 	} catch {
 		/* MIDI discovery can be unavailable on CI. */
 	}
+	let inputs: string[] = []
+	try {
+		inputs = listMidiInputs()
+	} catch {
+		/* Input discovery may be unavailable. */
+	}
 	return [
+		{ type: 'checkbox', id: 'returnEnabled', label: 'Monitor return MSC (USB input)', width: 12, default: false },
+		{
+			type: 'dropdown',
+			id: 'returnDevice',
+			label: 'Return MIDI input',
+			width: 12,
+			default: '',
+			choices: inputs.map((name) => ({ id: name, label: name })),
+		},
+		{ type: 'number', id: 'returnDeviceId', label: 'Return MSC Device ID', width: 6, min: 0, max: 126, default: 1 },
 		{
 			type: 'dropdown',
 			id: 'transport',
 			label: 'Transport',
 			width: 6,
 			default: 'usb',
-			choices: [
-				{ id: 'usb', label: 'USB MIDI' },
-				{ id: 'rtp-midi', label: 'RTP-MIDI / AppleMIDI' },
-				{ id: 'tcp', label: 'Raw MIDI over TCP' },
-			],
+			choices: [{ id: 'usb', label: 'USB MIDI' }],
 		},
 		{
 			type: 'dropdown',
@@ -69,15 +82,6 @@ export function GetConfigFields(): SomeCompanionConfigField[] {
 			width: 12,
 			default: outputs[0] ?? '',
 			choices: outputs.map((name) => ({ id: name, label: name })),
-		},
-		{ type: 'textinput', id: 'host', label: 'Remote host or IP address', width: 8, default: '' },
-		{ type: 'number', id: 'port', label: 'Remote port', width: 4, min: 1, max: 65535, default: 5004 },
-		{
-			type: 'textinput',
-			id: 'rtpSessionName',
-			label: 'Local RTP-MIDI session name (optional)',
-			width: 12,
-			default: 'Companion Hog MSC',
 		},
 	]
 }

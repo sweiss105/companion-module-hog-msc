@@ -23,6 +23,9 @@ export type ActionsSchema = {
 	stop: { options: ListOptions }
 	resume: { options: ListOptions }
 	release: { options: ListOptions }
+	release_all_lists: { options: Record<string, never> }
+	release_all_scenes: { options: Record<string, never> }
+	release_all: { options: Record<string, never> }
 	skip_forward: { options: GoOptions }
 	skip_back: { options: GoOptions }
 	change_page: { options: PageOptions }
@@ -67,7 +70,9 @@ export function UpdateActions(self: ModuleInstance): void {
 					const list = await resolve(event.options.list, 'whole', 'List')
 					const cue = await resolve(event.options.cue, 'cue', 'Cue')
 					const target = requireGoTarget(list, cue)
-					enqueue(encodeGo(address(), target.list, target.cue), `MSC GO List ${target.list} Cue ${target.cue}`)
+					enqueue(encodeGo(address(), target.list, target.cue), `MSC GO List ${target.list} Cue ${target.cue}`, () =>
+						self.setListActive(target.list, true),
+					)
 				} catch (error) {
 					self.log('error', error instanceof Error ? error.message : String(error))
 				}
@@ -76,6 +81,9 @@ export function UpdateActions(self: ModuleInstance): void {
 		stop: listAction('STOP', MscCommand.Stop),
 		resume: listAction('RESUME', MscCommand.Resume),
 		release: listAction('Release', MscCommand.GoOff),
+		release_all_lists: releaseAllAction('Release All Lists', 'lists'),
+		release_all_scenes: releaseAllAction('Release All Scenes', 'scenes'),
+		release_all: releaseAllAction('Release All', 'all'),
 		skip_forward: timedAction('Skip Forward'),
 		skip_back: timedAction('Skip Back'),
 		change_page: {
@@ -129,14 +137,33 @@ export function UpdateActions(self: ModuleInstance): void {
 	function logError(error: unknown): void {
 		self.log('error', error instanceof Error ? error.message : String(error))
 	}
+	function releaseAllAction(name: string, scope: 'lists' | 'scenes' | 'all') {
+		return {
+			name,
+			description:
+				'Releases only targets currently tracked as active. Verify Companion states against Hog before use. Missed events and reconnects can leave tracking incomplete.',
+			options: [],
+			callback: async () => {
+				try {
+					self.releaseTracked(scope, address())
+				} catch (error) {
+					logError(error)
+				}
+			},
+		}
+	}
 	function listAction(name: string, command: 0x02 | 0x03 | 0x0b) {
 		return {
 			name,
-			options: [textField('list', 'List', 'Optional. Blank targets the currently chosen playback.')],
+			description: 'Requires an explicit List. Blank targets produced no response in Hog OS 5 testing.',
+			options: [textField('list', 'List', 'Required whole-number Hog list.')],
 			callback: async (event: { options: ListOptions }) => {
 				try {
 					const list = await resolve(event.options.list, 'whole', 'List')
-					enqueue(encodeListCommand(address(), command, list), `MSC ${name}${list ? ` List ${list}` : ''}`)
+					if (!list) throw new Error(`${name} requires a List on Hog OS 5`)
+					enqueue(encodeListCommand(address(), command, list), `MSC ${name} List ${list}`, () => {
+						if (list && command !== MscCommand.Stop) self.setListActive(list, command !== MscCommand.GoOff)
+					})
 				} catch (error) {
 					logError(error)
 				}
@@ -156,7 +183,9 @@ export function UpdateActions(self: ModuleInstance): void {
 					const list = await resolve(event.options.list, 'whole', 'List')
 					const cue = await resolve(event.options.cue, 'cue', 'Destination Cue')
 					if (!cue) throw new Error(`${name} requires a destination Cue`)
-					enqueue(encodeTimedGo(address(), list, cue), `MSC ${name}${list ? ` List ${list}` : ''} Cue ${cue}`)
+					enqueue(encodeTimedGo(address(), list, cue), `MSC ${name}${list ? ` List ${list}` : ''} Cue ${cue}`, () => {
+						if (list) self.setListActive(list, true)
+					})
 				} catch (error) {
 					logError(error)
 				}
