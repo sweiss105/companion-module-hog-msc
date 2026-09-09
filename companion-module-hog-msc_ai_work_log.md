@@ -25,11 +25,38 @@ Operating rules:
 - Known-good boundary: local lint, TypeScript build, 6 offline tests, package generation/content inspection, packaged-module import, packaged-layout USB enumeration, GitHub CI, and Bitfocus Companion Module Checks pass for version 0.1.3 fix commit `60878dce30cabfac618947df310af68d97dd08ac`; Companion 5.0.3 CSV export confirms its info-level successful-send log with exact bytes. USB enumeration and port-open/OK status are screenshot-confirmed, and the user reports successful Hog OS 5 execution of GO List 47 Cue 1 over USB MIDI.
 - USB packaging defect: version 0.1.1 installed its native binaries but omitted the bundled JavaScript loader because USB used an opaque runtime `createRequire()` call. Version 0.1.2 uses the package's statically bundled lazy entry and enumerates `C2MIDI Pro Port 1` from the packaged layout.
 - Physically qualified over USB MIDI for explicit-list/cue GO (List 47 Cue 1), explicit-list STOP/RESUME (List 48, three successful cycles), and explicit-list Release (List 48); other MSC actions, addressing variants, queue timing, reconnect behavior, AppleMIDI, and raw TCP remain untested on Hog OS 5.
+- Physically rejected variant: GO with List 48 specified and Cue blank was transmitted correctly five times but produced no Hog response under controlled List 48 conditions. Treat list-only GO as unsupported pending a contrary result; current/chosen-playback GO with both fields blank remains a separate untested form.
 - Logging defect: resolved and CSV-export verified in 0.1.3; successful transmissions are retained at info level with resolved action description and exact bytes.
 - Resolved target clarification: the user confirmed List 47 Cue 1 was intentional; the live description and encoded bytes are correct.
-- Immediate next step: test GO with List 48 specified and Cue left blank, which should start/advance that list without an explicit cue.
+- Immediate next step: test current/chosen-playback GO with both List and Cue blank while List 48 is attached to a master and its Choose key is lit.
 
 ## Work history
+
+### [2026-09-09 10:32 CDT] Rejected list-only GO after five ignored Hog OS 5 transmissions
+
+Actor: user and agent
+
+Context and request:
+
+- The user tested GO with List 48 specified and Cue blank after removing the ambiguous automatic timing from the beginning of List 48, reported no response, repeated the test, and supplied Companion export `Steves-MacBook-Pro-3.local_2026-09-09-1031_companion_log.csv`.
+
+Completed:
+
+- Correlated five button presses with five identical successful-send entries.
+- Confirmed the module transmitted the intended MSC encoding and remained free of Hog connection warnings/errors during the test interval.
+
+Validation:
+
+- Five entries between 15:26:53 and 15:30:17 UTC read `Sent MSC GO List 48: F0 7F 01 02 01 01 00 34 38 F7`.
+- Each entry occurred 0–1 ms after its button press and before release.
+- The user reported no Hog response. The adjusted cuelist screenshot showed Cue 1 at the start and Cue 2 without automatic timing, reducing the earlier state ambiguity.
+- ETC's current MSC table describes GO data as cue number plus cuelist number and does not document an empty-cue/list-specific form.
+- This evidence rejects list-only GO under the tested Hog OS 5 conditions. It does not determine whether a fully targetless GO correctly operates the currently chosen playback.
+
+Remaining / next step:
+
+- Test GO with both fields blank while a safe List 48 playback is chosen; expected bytes are `F0 7F 01 02 01 01 F7`.
+- After resolving targetless GO, change the action contract so a supplied List also requires a Cue, unless later evidence supports list-only GO.
 
 ### [2026-09-09 10:25 CDT] Passed USB MSC Release on List 48
 
