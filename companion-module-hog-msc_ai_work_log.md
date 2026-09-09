@@ -22,7 +22,7 @@ Operating rules:
 - Authoritative project root: `/Users/steve.weiss/Documents/ChatGPT/Hog 5 MSC Companion Module`.
 - Public repository: `https://github.com/sweiss105/companion-module-hog-msc`, branch `main`.
 - Version: `0.1.4` development scaffold; first eventual GitHub release is intended to be a pre-release.
-- Known-good boundary: version 0.1.4 passes local formatting, lint, TypeScript build, 7 offline tests, package generation/content inspection, and packaged-module import; GitHub CI and Bitfocus checks are pending. Companion 5.0.3 CSV export confirms exact-byte successful-send logging from version 0.1.3. USB enumeration and port-open/OK status are screenshot-confirmed, and the user reports successful Hog OS 5 execution of explicit GO List 47 Cue 1 over USB MIDI.
+- Known-good boundary: version 0.1.4 passes local formatting, lint, TypeScript build, 7 offline tests, package generation/content inspection, packaged-module import, GitHub CI, and Bitfocus Companion Module Checks for implementation commit `bb7b561134e5562c445aa767d8bd6ce0649473fe`. Companion 5.0.3 CSV export confirms exact-byte successful-send logging from version 0.1.3. USB enumeration and port-open/OK status are screenshot-confirmed, and the user reports successful Hog OS 5 execution of explicit GO List 47 Cue 1 over USB MIDI.
 - USB packaging defect: version 0.1.1 installed its native binaries but omitted the bundled JavaScript loader because USB used an opaque runtime `createRequire()` call. Version 0.1.2 uses the package's statically bundled lazy entry and enumerates `C2MIDI Pro Port 1` from the packaged layout.
 - Physically qualified over USB MIDI for explicit-list/cue GO (List 47 Cue 1), explicit-list STOP/RESUME (List 48, three successful cycles), and explicit-list Release (List 48); other MSC actions, addressing variants, queue timing, reconnect behavior, AppleMIDI, and raw TCP remain untested on Hog OS 5.
 - Physically rejected GO variants: GO with List 48 and no Cue was transmitted correctly six times, and targetless GO was transmitted correctly twice; neither produced a Hog response under controlled List 48 conditions. Version 0.1.4 blocks both incomplete forms and requires explicit List + Cue.
@@ -54,10 +54,12 @@ Validation:
 - No MIDI was sent while implementing the restriction.
 - `corepack yarn check` passed lint, TypeScript build, and all 7 offline tests, including the new incomplete-GO validation cases.
 - `corepack yarn package` produced `hog-msc-0.1.4.tgz`; archive inspection confirmed all six supported native MIDI prebuild directories, and importing `pkg/hog-msc/main.js` succeeded.
+- Pushed implementation commit `bb7b561134e5562c445aa767d8bd6ce0649473fe` to `main`.
+- GitHub CI run `34372033783` and Companion Module Checks run `34372034814` both passed.
 
 Remaining / next step:
 
-- Commit and push version 0.1.4, then confirm GitHub CI and Bitfocus module checks.
+- Install version 0.1.4 only after a bounded preflight, then verify incomplete GO is blocked and explicit List + Cue still works.
 - Install version 0.1.4 only after a bounded preflight, then verify incomplete GO is blocked and explicit List + Cue still works.
 
 ### [2026-09-09 10:32 CDT] Rejected list-only GO after five ignored Hog OS 5 transmissions
