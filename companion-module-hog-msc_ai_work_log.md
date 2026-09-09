@@ -21,12 +21,92 @@ Operating rules:
 - Goal: unofficial Bitfocus Companion module, display name `ETC Hog 5 MIDI Show Control`, official support target Hog OS 5 only.
 - Authoritative project root: `/Users/steve.weiss/Documents/ChatGPT/Hog 5 MSC Companion Module`.
 - Public repository: `https://github.com/sweiss105/companion-module-hog-msc`, branch `main`.
-- Version: `0.1.0` development scaffold; first eventual GitHub release is intended to be a pre-release.
-- Known-good boundary: local lint, TypeScript build, 5 offline tests, package generation/import, GitHub CI, and Bitfocus Companion Module Checks pass at commit `7b0f0e94e2a8c49faa404d7d5eaac0e4507cecaa`.
-- Not qualified: no live Companion load, USB MIDI hardware, AppleMIDI peer, raw TCP peer, or Hog OS 5 console test has been performed.
-- Immediate next step: load the package in a current Companion developer environment and complete a non-show Hog OS 5 Event Monitor acceptance cycle, starting with USB MIDI.
+- Version: `0.1.1` development scaffold; first eventual GitHub release is intended to be a pre-release.
+- Known-good boundary: local lint, TypeScript build, 5 offline tests, native-prebuild package generation/content inspection, and packaged-module import pass for `hog-msc-0.1.1.tgz`; GitHub CI and Bitfocus checks for this fix are pending.
+- USB packaging defect: fixed locally by declaring the `native-addons` permission and packaging `@julusian/midi` prebuilds for supported macOS, Linux, and Windows architectures. Reinstallation and enumeration inside Companion remain pending.
+- Not qualified: no MSC command has been transmitted to or observed by Hog OS 5; AppleMIDI and raw TCP also remain untested.
+- Immediate next step: install `hog-msc-0.1.1.tgz` in Companion and confirm that `C2MIDI Pro Port 1` appears in the USB output dropdown before sending any command.
 
 ## Work history
+
+### [2026-09-09 08:55 CDT] Fixed USB MIDI native-addon packaging and built version 0.1.1
+
+Actor: agent, with user authorization
+
+Context and request:
+
+- The user approved implementation of the diagnosed USB MIDI packaging fix.
+
+Completed:
+
+- Added `build-config.cjs` with the Bitfocus packager declaration `prebuilds: ['@julusian/midi']`.
+- Added Companion runtime permission `native-addons: true`.
+- Bumped the development package and manifest version to `0.1.1` so Companion can distinguish the repaired package from the broken `0.1.0` install.
+- Corrected repository and issue URLs to `sweiss105/companion-module-hog-msc`.
+- Built replacement package `hog-msc-0.1.1.tgz` at the project root.
+
+Validation:
+
+- `corepack yarn check`: passed (lint, TypeScript build, 5 offline tests).
+- `corepack yarn package`: passed and recognized the additional build configuration.
+- Archive inspection confirmed packaged `@julusian/midi` N-API binaries for macOS arm64/x64, Linux arm64/x64, and Windows arm64/x64.
+- Direct import of `pkg/hog-msc/main.js` passed and returned the expected default module function.
+- No MIDI or Hog MSC command was sent; Companion reinstallation and physical Hog OS 5 qualification remain pending.
+
+Remaining / next step:
+
+- Commit and push the fix, confirm GitHub checks, then install `hog-msc-0.1.1.tgz` in Companion.
+- Confirm USB device enumeration before requesting fresh authorization for a bounded command test against Hog OS 5 Event Monitor.
+
+### [2026-09-09 08:52 CDT] Diagnosed missing USB MIDI device as a packaging defect
+
+Actor: user and agent
+
+Context and request:
+
+- During the planned attended test, the user reported that the installed Companion module did not see the USB MIDI device.
+- The diagnostic scope was read-only; no MIDI or Hog command was sent.
+
+Completed:
+
+- Confirmed the local native MIDI library enumerates `C2MIDI Pro Port 1` along with the host's virtual MIDI ports.
+- Inspected `hog-msc-0.1.0.tgz` and confirmed it contains no `midi.node` native binary or `@julusian/midi` prebuild directory.
+- Compared the project with Bitfocus's current `companion-module-generic-midi` implementation and official native-dependency packaging guidance.
+- Identified the missing requirements: `build-config.cjs` must declare `prebuilds: ['@julusian/midi']`, and `companion/manifest.json` must declare runtime permission `native-addons: true`.
+
+Validation:
+
+- Local `@julusian/midi` enumeration returned `C2MIDI Pro Port 1`; this proves macOS and the development dependency can see the output on this host.
+- Package-content inspection returned no MIDI native binding; this directly explains why the installed package cannot enumerate the interface.
+- No implementation fix, package rebuild, Companion reinstall, or physical Hog test was performed in this diagnostic step.
+
+Remaining / next step:
+
+- With user approval to implement the fix, add the two native packaging declarations, build and inspect a replacement package, run local and GitHub checks, and reinstall it in Companion.
+- Confirm device enumeration before requesting fresh authorization to send a harmless MSC test command to Hog OS 5 Event Monitor.
+
+### [2026-09-08 19:00 CDT] Scheduled attended Hog testing for September 9
+
+Actor: user
+
+Context and request:
+
+- The user reported that a Hog console will be available for testing tomorrow, September 9, 2026.
+
+Completed:
+
+- Recorded the planned attended test window as the next project acceptance milestone.
+
+Validation:
+
+- User-reported availability only; not independently verified.
+- No Companion or Hog test has occurred yet, and no physical-qualification status changed.
+
+Remaining / next step:
+
+- On September 9, load the module in Companion and begin with a bounded USB MIDI test against Hog OS 5 Event Monitor using a non-production show and harmless, explicitly selected targets.
+- Record Companion version, Hog OS 5 version, host operating system, MIDI interface identity, configured MSC Device ID, exact action tested, bytes observed, and pass/fail result without including sensitive show data.
+- Keep RTP-MIDI/AppleMIDI and raw TCP unqualified until each receives its own test cycle.
 
 ### [2026-09-08 18:57 CDT] Repaired and verified GitHub CI and packaged-module loading
 

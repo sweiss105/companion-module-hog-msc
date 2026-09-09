@@ -1,6 +1,6 @@
 {
 	"name": "companion-module-hog-msc",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"main": "dist/main.js",
 	"type": "module",
 	"scripts": {
@@ -18,7 +18,7 @@
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/bitfocus/companion-module-hog-msc.git"
+		"url": "git+https://github.com/sweiss105/companion-module-hog-msc.git"
 	},
 	"engines": {
 		"node": "^22.20",
