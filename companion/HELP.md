@@ -8,6 +8,10 @@ Select one transport, choose a specific decimal MSC Device ID or Broadcast, and 
 
 USB MIDI uses the selected output name. RTP-MIDI/AppleMIDI and raw TCP require a host and port. Raw TCP adds no framing.
 
+## GO targeting
+
+GO requires both a List and Cue. Hog OS 5 physical testing found that list-only and targetless GO messages were ignored, so leaving either field blank logs a validation error and sends no MIDI.
+
 ## Scene tracking
 
 Scene State is local assumed state, not console feedback. State changes only after a scene command is transmitted. Disconnect/reconnect, restart, configuration changes, and Reset All Scene States make all scenes inactive locally.

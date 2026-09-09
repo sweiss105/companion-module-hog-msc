@@ -4,6 +4,13 @@ All notable changes will be documented here. This project follows Semantic Versi
 
 ## [Unreleased]
 
+## [0.1.4] - 2026-09-09
+
+### Changed
+
+- Require both List and Cue for GO. Controlled Hog OS 5 USB testing found that six list-only and two targetless GO transmissions were ignored.
+- Block incomplete GO actions with a clear validation error before MIDI is queued or transmitted.
+
 ## [0.1.3] - 2026-09-09
 
 ### Fixed

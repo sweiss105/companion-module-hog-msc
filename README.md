@@ -9,7 +9,7 @@ An unofficial Bitfocus Companion module that sends MIDI Show Control (MSC) comma
 
 - This is a community project and is not affiliated with, endorsed by, or supported by Electronic Theatre Controls, Inc. ETC, Hog, and Hog 5 are trademarks of their respective owners.
 - The software is provided without warranty. You are responsible for validating it with your exact Companion, Hog OS 5, interface, network, show file, and operating system.
-- Do not first test this module during rehearsal or a live show. Verify incoming bytes in Hog Event Monitor and prove every action against a non-production show file.
+- Do not first test this module during rehearsal or a live show. Prove every action against a non-production show file and inspect Companion's exact-byte transmission log.
 - The official support target for this project is **Hog OS 5 only**. Hog 4 behavior is not supported or verified.
 
 ## Features
@@ -39,7 +39,7 @@ Map the intended MIDI input in the Hog console MIDI configuration, enable **MSC 
 
 ## Actions
 
-- **GO:** blank List and Cue sends GO; List only sends GO List; List plus Cue sends GO List Cue. A Cue without a List is rejected.
+- **GO:** requires both an explicit List and Cue. Decimal cues are supported. Hog OS 5 physical testing found that list-only and targetless GO messages were ignored, so the module blocks both incomplete forms without transmitting MIDI.
 - **STOP / RESUME / Release:** List is optional; blank targets Hog's currently chosen playback behavior.
 - **Skip Forward / Skip Back:** currently implemented as immediate `TIMED_GO` actions requiring an explicit destination Cue. See the protocol limitation below.
 - **Change Page:** requires a whole-number Page.
@@ -57,6 +57,7 @@ List, Scene, and Page values must resolve to whole non-negative numbers. Cue val
 - AppleMIDI discovery is not yet included; v0.1 uses manual host/port configuration. The session transport requires hardware/software testing.
 - The design conversation requested operator-facing Skip Forward/Back with only an optional List, but Hog's documented `TIMED_GO` wire format requires a cue number. The initial implementation therefore requires an explicit destination Cue pending Hog OS 5 hardware qualification.
 - No supported/tested hardware matrix is published yet.
+- On 2026-09-09, USB MIDI testing against Hog OS 5 physically qualified explicit GO List + Cue, STOP List, RESUME List, and Release List. Six list-only GO transmissions and two targetless GO transmissions were received without module errors but produced no Hog response; these GO variants are therefore not exposed by the module.
 
 ## Development
 

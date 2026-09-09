@@ -10,7 +10,7 @@ import {
 	parseRawSysex,
 	type DeviceAddress,
 } from './msc.js'
-import { resolveOptionalNumber } from './validation.js'
+import { requireGoTarget, resolveOptionalNumber } from './validation.js'
 
 type ListOptions = { list: string }
 type GoOptions = { list: string; cue: string }
@@ -57,17 +57,17 @@ export function UpdateActions(self: ModuleInstance): void {
 	self.setActionDefinitions({
 		go: {
 			name: 'GO',
-			description: 'GO, GO List, or GO List Cue depending on which fields are filled.',
+			description: 'GO an explicit Hog cue. Both List and Cue are required on Hog OS 5.',
 			options: [
-				textField('list', 'List', 'Blank means the currently chosen playback.'),
-				textField('cue', 'Cue', 'Decimal cues are supported. Requires List.'),
+				textField('list', 'List', 'Required whole-number Hog list.'),
+				textField('cue', 'Cue', 'Required Hog cue. Decimal cues are supported.'),
 			],
 			callback: async (event) => {
 				try {
 					const list = await resolve(event.options.list, 'whole', 'List')
 					const cue = await resolve(event.options.cue, 'cue', 'Cue')
-					if (cue && !list) throw new Error('Cue requires a List')
-					enqueue(encodeGo(address(), list, cue), `MSC GO${list ? ` List ${list}` : ''}${cue ? ` Cue ${cue}` : ''}`)
+					const target = requireGoTarget(list, cue)
+					enqueue(encodeGo(address(), target.list, target.cue), `MSC GO List ${target.list} Cue ${target.cue}`)
 				} catch (error) {
 					self.log('error', error instanceof Error ? error.message : String(error))
 				}

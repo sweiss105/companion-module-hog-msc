@@ -16,10 +16,6 @@ void describe('Hog MSC encoding', () => {
 	void it('encodes ETC documented GO List 1 Cue 34.4', () => {
 		assert.equal(hex(encodeGo(1, '1', '34.4')), 'F07F0102010133342E340031F7')
 	})
-	void it('encodes current GO and GO List', () => {
-		assert.equal(hex(encodeGo(1)), 'F07F01020101F7')
-		assert.equal(hex(encodeGo(1, '3')), 'F07F010201010033F7')
-	})
 	void it('encodes list controls, immediate TIMED_GO, page and scene path 5', () => {
 		assert.equal(hex(encodeListCommand(1, MscCommand.Stop, '3')), 'F07F010201020033F7')
 		assert.equal(hex(encodeTimedGo(1, '1', '2')), 'F07F010201040000000000320031F7')
