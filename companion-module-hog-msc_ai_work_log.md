@@ -19,9 +19,9 @@ Operating rules:
 
 ## Current project snapshot
 
-- Current installed/source version: **0.1.13**, USB MIDI only. Local development changes remain uncommitted/unpublished; first eventual GitHub release is intended as a prerelease.
+- Current installed/source version: **0.1.13**, USB MIDI only. Published as GitHub prerelease v0.1.13 at release commit 1dbc3a23e33139dfca9dc3aaa96fa6a7da6054f7.
 - Authoritative root: `/Users/steve.weiss/Documents/ChatGPT/Hog 5 MSC Companion Module`; repository `https://github.com/sweiss105/companion-module-hog-msc`, branch main.
-- Next: review local changes and prepare prerelease packaging/CI. Documentation cleanup is complete; no additional physical test is currently requested. See `docs/ACCEPTANCE.md` for passed cases and remaining limits.
+- Next: optional broader qualification or user feedback. Prerelease packaging/CI/publication are complete; no additional physical test is currently requested. See `docs/ACCEPTANCE.md` for passed cases and remaining limits.
 - Core explicit list controls, scenes, list/scene reconciliation, tracked Release All, USB recovery/discard/no-replay, blank-List Skip Forward/Back, decimal GO/Skip Forward, and broadcast Skip passed bounded attended tests across development versions. Physical results are operator-reported, with logged evidence as recorded below.
 - v0.1.13 installed required-List validation passed for STOP, RESUME, and Release. Latest implementation checks: lint/build, 20 offline tests, package and import passed before documentation cleanup.
 - User confirmed saved connection after broadcast testing: Specific Device ID1, return ID1, monitoring enabled, C2MIDI Pro Port1 input/output, 0 ms delay. Temporary test-button removal remains unconfirmed. Do not infer current physical playback state from these settings.
@@ -30,6 +30,12 @@ Operating rules:
 - Session remains non-production until user says otherwise. No agent MIDI sends without bounded authorization. Primary protocol reference remains `docs/Hog_v5.2.1_UserManual_revA.pdf`; its version is not the tested console build.
 
 ## Work history
+
+### [2026-09-09] Published v0.1.13 prerelease
+
+- Release commit 1dbc3a23e33139dfca9dc3aaa96fa6a7da6054f7 pushed to main. CI 34403166320 and Companion Module Checks 34403166870 both passed for that exact commit.
+- Rebuilt package after commit hooks; packaged import passed and all six native MIDI binaries present. Published https://github.com/sweiss105/companion-module-hog-msc/releases/tag/v0.1.13 with prerelease=true and uploaded hog-msc-0.1.13.tgz (581479 bytes). GitHub asset SHA256: 96ae44fb1bfcc7445820f3cc46f952e05e43d9a3c3c1d384f734808c6dd0521e.
+- Release notes identify unofficial/experimental scope, AI assistance, tested cases, and remaining limits. No installed configuration changes or MIDI sends. This subsequent work-log commit does not change the tagged runtime or package.
 
 ### [2026-09-09] Prerelease preparation authorized
 
