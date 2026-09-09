@@ -4,6 +4,12 @@ All notable changes will be documented here. This project follows Semantic Versi
 
 ## [Unreleased]
 
+## [0.1.3] - 2026-09-09
+
+### Fixed
+
+- Log each successful transmission at info level with its resolved action description and exact MIDI bytes so Companion log exports retain the event.
+
 ## [0.1.2] - 2026-09-09
 
 ### Fixed

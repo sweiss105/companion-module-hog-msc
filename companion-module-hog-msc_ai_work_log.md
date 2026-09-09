@@ -21,13 +21,143 @@ Operating rules:
 - Goal: unofficial Bitfocus Companion module, display name `ETC Hog 5 MIDI Show Control`, official support target Hog OS 5 only.
 - Authoritative project root: `/Users/steve.weiss/Documents/ChatGPT/Hog 5 MSC Companion Module`.
 - Public repository: `https://github.com/sweiss105/companion-module-hog-msc`, branch `main`.
-- Version: `0.1.2` development scaffold; first eventual GitHub release is intended to be a pre-release.
-- Known-good boundary: local lint, TypeScript build, 5 offline tests, package generation/content inspection, packaged-module import, packaged-layout USB enumeration, GitHub CI, and Bitfocus Companion Module Checks pass for version 0.1.2 fix commit `a847d7724fe6f80b543de610ea5fccd761efaa58`; Companion installation remains pending.
+- Version: `0.1.3` development scaffold; first eventual GitHub release is intended to be a pre-release.
+- Known-good boundary: local lint, TypeScript build, 6 offline tests, package generation/content inspection, packaged-module import, and packaged-layout USB enumeration pass for `hog-msc-0.1.3.tgz`; GitHub checks and live exported-log verification for 0.1.3 are pending. Companion 5.0.3 USB enumeration and port-open/OK status are screenshot-confirmed on 0.1.2, and the user reports successful Hog OS 5 execution of GO List 43 Cue 1 over USB MIDI.
 - USB packaging defect: version 0.1.1 installed its native binaries but omitted the bundled JavaScript loader because USB used an opaque runtime `createRequire()` call. Version 0.1.2 uses the package's statically bundled lazy entry and enumerates `C2MIDI Pro Port 1` from the packaged layout.
-- Not qualified: no MSC command has been transmitted to or observed by Hog OS 5; AppleMIDI and raw TCP also remain untested.
-- Immediate next step: install `hog-msc-0.1.2.tgz` in Companion and confirm that `C2MIDI Pro Port 1` appears in the USB output dropdown before sending any command.
+- Physically qualified only for the exact USB MIDI GO test to List 43 Cue 1; other MSC actions, addressing variants, queue timing, reconnect behavior, AppleMIDI, and raw TCP remain untested on Hog OS 5.
+- Logging defect: fixed locally in 0.1.3 by emitting successful transmissions at info level with resolved action description and exact bytes; Companion CSV export verification remains pending.
+- Immediate next step: install `hog-msc-0.1.3.tgz`, repeat the safe GO List 43 Cue 1 test once with fresh authorization, and confirm the info-level entry survives CSV export.
 
 ## Work history
+
+### [2026-09-09 10:09 CDT] Implemented exportable successful-transmission logging in version 0.1.3
+
+Actor: agent, with user approval
+
+Context and request:
+
+- The user approved the recommended validation plan beginning with the missing exported transmission-log milestone.
+
+Completed:
+
+- Changed successful transmission logging from debug to info level.
+- Added the `Sent` prefix and retained the resolved action description plus exact uppercase hexadecimal MIDI bytes.
+- Added a focused regression test using GO List 43 Cue 1 and bumped the package/manifest version to 0.1.3.
+- Built replacement package `hog-msc-0.1.3.tgz`.
+
+Files and decisions:
+
+- `src/transmission-log.ts` owns the successful-send log format and fixes the severity at `info`.
+- `src/main.ts` logs only after `transport.send()` completes successfully.
+- The expected first live verification entry is `Sent MSC GO List 43 Cue 1: F0 7F 01 02 01 01 31 00 34 33 F7`.
+- Correction to earlier test guidance: ETC's current Hog v5.2.1 manual does not document the legacy Hog 3/4 Event Monitor. Physical behavior and external/Companion-side evidence must be used instead.
+
+Validation:
+
+- `corepack yarn check`: passed (lint, TypeScript build, 6 offline tests).
+- The new regression test passed and asserted info severity, the resolved action, and exact expected bytes.
+- `corepack yarn package`: passed; archive inspection confirmed native prebuilds remain present.
+- Packaged-layout USB enumeration under Companion's bundled Node 22 runtime still returned `C2MIDI Pro Port 1`.
+- Packaged-code inspection confirmed the info-level `Sent` log path is included.
+- No MIDI command was sent during implementation or offline validation.
+
+Remaining / next step:
+
+- Commit/push version 0.1.3 and confirm GitHub CI plus Bitfocus Module Checks.
+- Install version 0.1.3, repeat one authorized harmless GO, export the Companion log, and confirm the exact `Sent` entry.
+
+### [2026-09-09 10:07 CDT] Recorded missing exported transmission logging and the remaining validation scope
+
+Actor: user and agent
+
+Context and request:
+
+- The user supplied Companion export `Steves-MacBook-Pro-3.local_2026-09-09-1005_companion_log.csv` and asked whether it contained the successful GO List 43 Cue 1 action, then requested that the result be recorded as a to-do.
+
+Completed:
+
+- Searched the export for the Hog connection, action description, target, GO command, expected SysEx bytes, and transmission language.
+- Recorded a to-do to emit successful transmissions at info level, including the resolved action description and exact bytes, so they are visible and exportable from Companion.
+
+Validation:
+
+- The CSV shows the Hog transport connected and records Stream Deck button presses/releases, but contains no `GO List 43 Cue 1` or expected `F0 7F ... F7` transmission entry.
+- The physical GO result remains user-reported and successful; the missing log does not negate the observed Hog response, but it prevents the export from independently correlating the button press with the module's exact transmitted bytes.
+
+Remaining / next step:
+
+- Implement and test info-level successful-transmission logging in a future package.
+- Continue bounded physical USB acceptance tests for the remaining actions and failure/reconnect behavior before qualifying AppleMIDI or raw TCP.
+
+### [2026-09-09 10:03 CDT] Passed the first physical Hog OS 5 USB MSC GO test
+
+Actor: user and agent
+
+Context and request:
+
+- The user confirmed the show file was safe for testing, configured Companion action GO List 43 Cue 1, and received authorization for one button press after the exact target was read back.
+- Hog MIDI Options had been screenshot-confirmed with Device ID `1`, Command Format `01: General Lighting`, and `MSC In` enabled. Companion had been screenshot-confirmed green/OK with the matching Device ID and `C2MIDI Pro Port 1` selected.
+
+Completed:
+
+- The user pressed the Companion button once.
+- The user reported that Hog OS 5 ran List 43 Cue 1, nothing unintended occurred, and Companion remained green/OK.
+
+Validation:
+
+- User-reported physical result; not independently observed by the agent.
+- This qualifies only the exact GO command to a specified list/cue over USB MIDI. It does not qualify current-list GO, STOP, RESUME, Release, Skip, Page, Scene, Raw SysEx, queue pacing, reconnect, AppleMIDI, or raw TCP behavior.
+
+Remaining / next step:
+
+- Select one bounded follow-up command, confirm its target and resulting console state are safe, then obtain fresh authorization immediately before transmission.
+- Preserve the no-unintended-effects and Companion-health checks for every physical acceptance step.
+
+### [2026-09-09 09:48 CDT] Confirmed Companion opens the selected USB MIDI output
+
+Actor: user, verified by agent from supplied screenshot
+
+Context and request:
+
+- The user supplied a follow-up screenshot after selecting and saving `C2MIDI Pro Port 1`.
+
+Completed:
+
+- Confirmed module version 0.1.2 is enabled with USB MIDI transport, Specific Device ID `1`, zero-millisecond inter-command delay, and `C2MIDI Pro Port 1` selected.
+- Confirmed the connection row displays Companion's green OK status, establishing that the module successfully opened the selected USB MIDI output in Companion 5.0.3.
+
+Validation:
+
+- Live connection configuration and green OK status are screenshot-confirmed.
+- No module action, MSC transmission, Hog Event Monitor receipt, or physical Hog behavior is evidenced by this screenshot.
+
+Remaining / next step:
+
+- Put Hog OS 5 in a non-production safe test state with Event Monitor visible and verify that its MSC receive Device ID matches `1` (or deliberately choose broadcast).
+- Obtain fresh authorization immediately before triggering one harmless, explicitly selected MSC action.
+
+### [2026-09-09 09:04 CDT] Confirmed USB MIDI enumeration inside Companion 5.0.3
+
+Actor: user, verified by agent from supplied screenshot
+
+Context and request:
+
+- The user installed version 0.1.2 and reported that MIDI devices now appear.
+
+Completed:
+
+- Confirmed from the supplied Companion 5.0.3 connection-editor screenshot that module version 0.1.2 is selected and the USB MIDI output dropdown includes `C2MIDI Pro Port 1` plus the host's virtual MIDI outputs.
+- This resolves the USB enumeration and installed-package loader blockers.
+
+Validation:
+
+- Live UI enumeration is screenshot-confirmed in Companion 5.0.3.
+- No output was selected or saved in the supplied evidence, and no MIDI or Hog MSC command has been transmitted or observed.
+
+Remaining / next step:
+
+- Select `C2MIDI Pro Port 1`, save the connection, and confirm that the connection changes from Loading/Reconnecting to Connected/OK.
+- Before triggering any module action, establish a fresh safe-state checkpoint with Hog OS 5 Event Monitor and a non-production show.
 
 ### [2026-09-09 09:01 CDT] Corrected the packaged MIDI loader and verified packaged USB enumeration
 

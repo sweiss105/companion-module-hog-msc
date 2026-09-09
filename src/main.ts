@@ -6,7 +6,7 @@ import { UpdateActions, type ActionsSchema } from './actions.js'
 import { UpdateFeedbacks, type FeedbacksSchema } from './feedbacks.js'
 import { UpdatePresets } from './presets.js'
 import { CommandQueue, type QueueItem } from './queue.js'
-import { formatBytes } from './msc.js'
+import { logSuccessfulTransmission } from './transmission-log.js'
 import { TcpMidiTransport } from './transports/tcp.js'
 import { UsbMidiTransport } from './transports/usb.js'
 import { RtpMidiTransport } from './transports/rtp-midi.js'
@@ -118,6 +118,6 @@ export default class ModuleInstance extends InstanceBase<ModuleSchema> {
 	private async transmit(item: QueueItem): Promise<void> {
 		if (this.transportState !== 'Connected' || !this.transport) throw new Error('Transport is not connected')
 		await this.transport.send(item.bytes)
-		this.log('debug', `${item.description}: ${formatBytes(item.bytes)}`)
+		logSuccessfulTransmission((level, message) => this.log(level, message), item.description, item.bytes)
 	}
 }
