@@ -24,12 +24,37 @@ Operating rules:
 - Version: `0.1.3` development scaffold; first eventual GitHub release is intended to be a pre-release.
 - Known-good boundary: local lint, TypeScript build, 6 offline tests, package generation/content inspection, packaged-module import, packaged-layout USB enumeration, GitHub CI, and Bitfocus Companion Module Checks pass for version 0.1.3 fix commit `60878dce30cabfac618947df310af68d97dd08ac`; Companion 5.0.3 CSV export confirms its info-level successful-send log with exact bytes. USB enumeration and port-open/OK status are screenshot-confirmed, and the user reports successful Hog OS 5 execution of GO List 47 Cue 1 over USB MIDI.
 - USB packaging defect: version 0.1.1 installed its native binaries but omitted the bundled JavaScript loader because USB used an opaque runtime `createRequire()` call. Version 0.1.2 uses the package's statically bundled lazy entry and enumerates `C2MIDI Pro Port 1` from the packaged layout.
-- Physically qualified only for the exact USB MIDI GO test to List 43 Cue 1; other MSC actions, addressing variants, queue timing, reconnect behavior, AppleMIDI, and raw TCP remain untested on Hog OS 5.
+- Physically qualified over USB MIDI for explicit-list/cue GO (List 47 Cue 1) and explicit-list STOP/RESUME (List 48, three successful cycles); other MSC actions, addressing variants, queue timing, reconnect behavior, AppleMIDI, and raw TCP remain untested on Hog OS 5.
 - Logging defect: resolved and CSV-export verified in 0.1.3; successful transmissions are retained at info level with resolved action description and exact bytes.
 - Resolved target clarification: the user confirmed List 47 Cue 1 was intentional; the live description and encoded bytes are correct.
-- Immediate next step: inspect the CSV export when supplied, then choose the next bounded USB action test.
+- Immediate next step: perform one bounded explicit-list Release test on safe List 48, then re-GO the list if restoration is desired.
 
 ## Work history
+
+### [2026-09-09 10:22 CDT] Passed repeated USB MSC STOP and RESUME tests on List 48
+
+Actor: user and agent
+
+Context and request:
+
+- The user created safe test List 48, pressed the STOP and RESUME buttons several times, reported both actions worked, and supplied Companion export `Steves-MacBook-Pro-3.local_2026-09-09-1021_companion_log.csv`.
+
+Completed:
+
+- Correlated three STOP presses and three RESUME presses with six info-level transmission records.
+- Verified every action targeted List 48 and every logged byte string matched the action.
+
+Validation:
+
+- STOP occurred three times with bytes `F0 7F 01 02 01 02 00 34 38 F7`.
+- RESUME occurred three times with bytes `F0 7F 01 02 01 03 00 34 38 F7`.
+- Each transmission followed its Stream Deck press by 1–3 ms and preceded the corresponding release.
+- No Hog connection warning or error occurred during the 15:20–15:21 UTC test interval.
+- Physical STOP/RESUME behavior is user-reported; the agent independently verified the exported Companion transmission evidence.
+
+Remaining / next step:
+
+- Qualify explicit-list Release on List 48 with one authorized press, then verify the Hog result, Companion status, and exported log.
 
 ### [2026-09-09 10:16 CDT] Closed the successful-transmission logging milestone with CSV evidence
 
