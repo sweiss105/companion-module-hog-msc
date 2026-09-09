@@ -22,7 +22,7 @@ Operating rules:
 - Authoritative project root: `/Users/steve.weiss/Documents/ChatGPT/Hog 5 MSC Companion Module`.
 - Public repository: `https://github.com/sweiss105/companion-module-hog-msc`, branch `main`.
 - Version: `0.1.2` development scaffold; first eventual GitHub release is intended to be a pre-release.
-- Known-good boundary: local lint, TypeScript build, 5 offline tests, package generation/content inspection, packaged-module import, and packaged-layout USB enumeration pass for `hog-msc-0.1.2.tgz`; GitHub checks and Companion installation remain pending.
+- Known-good boundary: local lint, TypeScript build, 5 offline tests, package generation/content inspection, packaged-module import, packaged-layout USB enumeration, GitHub CI, and Bitfocus Companion Module Checks pass for version 0.1.2 fix commit `a847d7724fe6f80b543de610ea5fccd761efaa58`; Companion installation remains pending.
 - USB packaging defect: version 0.1.1 installed its native binaries but omitted the bundled JavaScript loader because USB used an opaque runtime `createRequire()` call. Version 0.1.2 uses the package's statically bundled lazy entry and enumerates `C2MIDI Pro Port 1` from the packaged layout.
 - Not qualified: no MSC command has been transmitted to or observed by Hog OS 5; AppleMIDI and raw TCP also remain untested.
 - Immediate next step: install `hog-msc-0.1.2.tgz` in Companion and confirm that `C2MIDI Pro Port 1` appears in the USB output dropdown before sending any command.
@@ -51,11 +51,13 @@ Validation:
 - `corepack yarn check`: passed (lint, TypeScript build, 5 offline tests).
 - `corepack yarn package`: passed and produced `hog-msc-0.1.2.tgz` with the JavaScript loader and native prebuilds.
 - Invoked `getConfigFields()` directly from `pkg/hog-msc/main.js` using Companion's bundled Node 22 runtime; packaged-layout enumeration returned all local outputs, including `C2MIDI Pro Port 1`.
+- GitHub CI run `34360975794`: passed for fix commit `a847d7724fe6f80b543de610ea5fccd761efaa58`.
+- Bitfocus Companion Module Checks run `34360976436`: passed for the same commit.
 - No MIDI or Hog MSC command was sent. Installation into Companion and physical Hog OS 5 qualification remain pending.
 
 Remaining / next step:
 
-- Commit and push version 0.1.2, verify GitHub checks, install `hog-msc-0.1.2.tgz`, and confirm the dropdown in Companion.
+- Install `hog-msc-0.1.2.tgz` and confirm the dropdown in Companion.
 - Do not send an MSC command until a fresh safe-state checkpoint is established.
 
 ### [2026-09-09 08:55 CDT] Fixed USB MIDI native-addon packaging and built version 0.1.1
