@@ -22,13 +22,64 @@ Operating rules:
 - Authoritative project root: `/Users/steve.weiss/Documents/ChatGPT/Hog 5 MSC Companion Module`.
 - Public repository: `https://github.com/sweiss105/companion-module-hog-msc`, branch `main`.
 - Version: `0.1.3` development scaffold; first eventual GitHub release is intended to be a pre-release.
-- Known-good boundary: local lint, TypeScript build, 6 offline tests, package generation/content inspection, packaged-module import, packaged-layout USB enumeration, GitHub CI, and Bitfocus Companion Module Checks pass for version 0.1.3 fix commit `60878dce30cabfac618947df310af68d97dd08ac`; live exported-log verification for 0.1.3 is pending. Companion 5.0.3 USB enumeration and port-open/OK status are screenshot-confirmed on 0.1.2, and the user reports successful Hog OS 5 execution of GO List 43 Cue 1 over USB MIDI.
+- Known-good boundary: local lint, TypeScript build, 6 offline tests, package generation/content inspection, packaged-module import, packaged-layout USB enumeration, GitHub CI, and Bitfocus Companion Module Checks pass for version 0.1.3 fix commit `60878dce30cabfac618947df310af68d97dd08ac`; Companion 5.0.3 CSV export confirms its info-level successful-send log with exact bytes. USB enumeration and port-open/OK status are screenshot-confirmed, and the user reports successful Hog OS 5 execution of GO List 47 Cue 1 over USB MIDI.
 - USB packaging defect: version 0.1.1 installed its native binaries but omitted the bundled JavaScript loader because USB used an opaque runtime `createRequire()` call. Version 0.1.2 uses the package's statically bundled lazy entry and enumerates `C2MIDI Pro Port 1` from the packaged layout.
 - Physically qualified only for the exact USB MIDI GO test to List 43 Cue 1; other MSC actions, addressing variants, queue timing, reconnect behavior, AppleMIDI, and raw TCP remain untested on Hog OS 5.
-- Logging defect: fixed locally in 0.1.3 by emitting successful transmissions at info level with resolved action description and exact bytes; Companion CSV export verification remains pending.
-- Immediate next step: install `hog-msc-0.1.3.tgz`, repeat the safe GO List 43 Cue 1 test once with fresh authorization, and confirm the info-level entry survives CSV export.
+- Logging defect: resolved and CSV-export verified in 0.1.3; successful transmissions are retained at info level with resolved action description and exact bytes.
+- Resolved target clarification: the user confirmed List 47 Cue 1 was intentional; the live description and encoded bytes are correct.
+- Immediate next step: inspect the CSV export when supplied, then choose the next bounded USB action test.
 
 ## Work history
+
+### [2026-09-09 10:16 CDT] Closed the successful-transmission logging milestone with CSV evidence
+
+Actor: user and agent
+
+Context and request:
+
+- The user supplied Companion export `Steves-MacBook-Pro-3.local_2026-09-09-1015_companion_log.csv` after the physically successful version 0.1.3 GO test.
+
+Completed:
+
+- Confirmed the info-level successful-transmission entry survives Companion CSV export.
+- Correlated the Stream Deck press, exact module transmission record, and user-reported correct Hog result.
+
+Validation:
+
+- At `2026-09-09T15:12:44.126Z`, the CSV records Stream Deck button `1/0/1` pressed.
+- At `2026-09-09T15:12:44.131Z`, five milliseconds later, it records `Sent MSC GO List 47 Cue 1: F0 7F 01 02 01 01 31 00 34 37 F7`.
+- The button release follows at `2026-09-09T15:12:44.265Z`.
+- No Hog-module warning or error occurs around the transmission. Earlier disconnect/reconnect entries in the full export correspond to installation, sleep/resume, or prior module versions and are not evidence of a failure during this test.
+- The user confirmed List 47 was intentional and that the cue ran correctly.
+
+Remaining / next step:
+
+- Choose and authorize the next bounded USB action test. Recommended next cycle: explicit-list STOP and RESUME during a deliberately safe long-running cue or fade.
+
+### [2026-09-09 10:13 CDT] Verified live successful-send logging and found a target discrepancy
+
+Actor: user and agent
+
+Context and request:
+
+- After installing version 0.1.3 and reporting that the cue ran correctly, the user supplied a Companion 5.0.3 log screenshot.
+
+Completed:
+
+- Confirmed the new info-level successful-transmission entry is visible in Companion.
+- Confirmed the logged bytes match the resolved action description exactly.
+
+Validation:
+
+- Screenshot-confirmed entry: `Sent MSC GO List 47 Cue 1: F0 7F 01 02 01 01 31 00 34 37 F7`.
+- The encoded cue is ASCII `31` (Cue 1) and the encoded list is ASCII `34 37` (List 47).
+- This differs from the previously planned and recorded repeat target, List 43 Cue 1. Whether List 47 was intentional is not yet confirmed.
+- Follow-up correction: the user confirmed List 47 was intentional, resolving the discrepancy without a code change.
+- The Companion UI proves live visibility; the CSV export itself has not yet been supplied or inspected.
+
+Remaining / next step:
+
+- Inspect the promised CSV export to confirm the info entry survives export, then proceed to the next bounded test.
 
 ### [2026-09-09 10:09 CDT] Implemented exportable successful-transmission logging in version 0.1.3
 
