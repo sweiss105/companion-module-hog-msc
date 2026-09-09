@@ -22,7 +22,7 @@ Operating rules:
 - Authoritative project root: `/Users/steve.weiss/Documents/ChatGPT/Hog 5 MSC Companion Module`.
 - Public repository: `https://github.com/sweiss105/companion-module-hog-msc`, branch `main`.
 - Version: `0.1.3` development scaffold; first eventual GitHub release is intended to be a pre-release.
-- Known-good boundary: local lint, TypeScript build, 6 offline tests, package generation/content inspection, packaged-module import, and packaged-layout USB enumeration pass for `hog-msc-0.1.3.tgz`; GitHub checks and live exported-log verification for 0.1.3 are pending. Companion 5.0.3 USB enumeration and port-open/OK status are screenshot-confirmed on 0.1.2, and the user reports successful Hog OS 5 execution of GO List 43 Cue 1 over USB MIDI.
+- Known-good boundary: local lint, TypeScript build, 6 offline tests, package generation/content inspection, packaged-module import, packaged-layout USB enumeration, GitHub CI, and Bitfocus Companion Module Checks pass for version 0.1.3 fix commit `60878dce30cabfac618947df310af68d97dd08ac`; live exported-log verification for 0.1.3 is pending. Companion 5.0.3 USB enumeration and port-open/OK status are screenshot-confirmed on 0.1.2, and the user reports successful Hog OS 5 execution of GO List 43 Cue 1 over USB MIDI.
 - USB packaging defect: version 0.1.1 installed its native binaries but omitted the bundled JavaScript loader because USB used an opaque runtime `createRequire()` call. Version 0.1.2 uses the package's statically bundled lazy entry and enumerates `C2MIDI Pro Port 1` from the packaged layout.
 - Physically qualified only for the exact USB MIDI GO test to List 43 Cue 1; other MSC actions, addressing variants, queue timing, reconnect behavior, AppleMIDI, and raw TCP remain untested on Hog OS 5.
 - Logging defect: fixed locally in 0.1.3 by emitting successful transmissions at info level with resolved action description and exact bytes; Companion CSV export verification remains pending.
@@ -59,11 +59,12 @@ Validation:
 - `corepack yarn package`: passed; archive inspection confirmed native prebuilds remain present.
 - Packaged-layout USB enumeration under Companion's bundled Node 22 runtime still returned `C2MIDI Pro Port 1`.
 - Packaged-code inspection confirmed the info-level `Sent` log path is included.
+- GitHub CI run `34368517671`: passed for fix commit `60878dce30cabfac618947df310af68d97dd08ac`.
+- Bitfocus Companion Module Checks run `34368519311`: passed for the same commit.
 - No MIDI command was sent during implementation or offline validation.
 
 Remaining / next step:
 
-- Commit/push version 0.1.3 and confirm GitHub CI plus Bitfocus Module Checks.
 - Install version 0.1.3, repeat one authorized harmless GO, export the Companion log, and confirm the exact `Sent` entry.
 
 ### [2026-09-09 10:07 CDT] Recorded missing exported transmission logging and the remaining validation scope
